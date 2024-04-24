@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.zhaw.freelancer4u.model.Freelancer;
 import ch.zhaw.freelancer4u.model.FreelancerCreateDTO;
@@ -42,13 +46,21 @@ public class FreelancerController {
     }
 
     @GetMapping("/freelancer")
-    public ResponseEntity<List<Freelancer>> getAllFreelancer(@AuthenticationPrincipal Jwt jwt) {
-        if (!roleService.hasRole("admin", jwt)) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-        List<Freelancer> allFree = freelancerRepository.findAll();
-        return new ResponseEntity<>(allFree, HttpStatus.OK);
+public ResponseEntity<Page<Freelancer>> getAllFreelancer(
+    @RequestParam(required = false) Integer pageNumber,
+    @RequestParam(required = false) Integer pageSize,
+    @AuthenticationPrincipal Jwt jwt) {
+    if (!roleService.hasRole("admin", jwt)) {
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
+    Page<Freelancer> allFreelancers;
+    if (pageNumber != null && pageSize != null) {
+        allFreelancers = freelancerRepository.findAll(PageRequest.of(pageNumber - 1, pageSize));
+    } else {
+        allFreelancers = new PageImpl<>(freelancerRepository.findAll());
+    }
+    return new ResponseEntity<>(allFreelancers, HttpStatus.OK);
+}
 
     @GetMapping("/freelancer/{id}")
     public ResponseEntity<Freelancer> getFreelancerById(@PathVariable String id, @AuthenticationPrincipal Jwt jwt) {
