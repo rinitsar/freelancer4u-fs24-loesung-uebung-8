@@ -10,6 +10,9 @@ let currentPage;
 let nrOfPages = 0;
 let defaultPageSize = 4;
 
+let earningsMin;
+let jobType;
+
   let jobs = [];
   let job = {
     description: null,
@@ -37,6 +40,13 @@ getJobs();
 
     let query = "?pageSize=" + defaultPageSize + "&pageNumber=" + currentPage;
   
+if (earningsMin) {
+query += "&min=" + earningsMin;
+}
+if (jobType && jobType !== "ALL") {
+query += "&type=" + jobType;
+}
+
     var config = {
       method: "get",
       url: api_root + "/api/job" + query,
@@ -119,6 +129,35 @@ getJobs();
 {/if}
 
 <h1>All Jobs</h1>
+<div class="row my-3">
+  <div class="col-auto">
+  <label for="" class="col-form-label">Earnings: </label>
+  </div>
+  <div class="col-3">
+  <input
+  class="form-control"
+  type="number"
+  placeholder="min"
+  bind:value={earningsMin}
+  />
+  </div>
+  <div class="col-auto">
+  <label for="" class="col-form-label">Job Type: </label>
+  </div>
+  <div class="col-3">
+  <select bind:value={jobType} class="form-select" id="type" type="text">
+  <option value="ALL"></option>
+  <option value="OTHER">OTHER</option>
+  <option value="TEST">TEST</option>
+  <option value="IMPLEMENT">IMPLEMENT</option>
+  <option value="REVIEW">REVIEW</option>
+  </select>
+  </div>
+  <div class="col-3">
+  <a class="btn btn-primary" href={"/jobs?page=1&jobType=" + jobType +
+  "&earningsMin=" + earningsMin} role="button">Apply</a>
+  </div>
+  </div>
 <table class="table">
   <thead>
     <tr>
