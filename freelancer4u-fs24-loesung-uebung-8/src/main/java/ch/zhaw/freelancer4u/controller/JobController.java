@@ -3,6 +3,8 @@ package ch.zhaw.freelancer4u.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -42,28 +44,28 @@ public class JobController {
     }
 
     @GetMapping("/job")
-    public ResponseEntity<List<Job>> getAllJobs(
-                @RequestParam(required = false) Double min,
-                @RequestParam(required = false) JobType type) {
-        List<Job> allJobs;
-        if (min == null && type == null) {
-            allJobs = jobRepository.findAll();
-        } else {
-            if (min != null && type != null) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            } else if (min != null) {
-                allJobs = jobRepository.findByEarningsGreaterThan(min);
-            } else {
-                allJobs = jobRepository.findByJobType(type);
-            }
-        }
-        return new ResponseEntity<>(allJobs, HttpStatus.OK);
-    }
-
-    @GetMapping("/job/aggregation/state")
-    public List<JobStateAggregation> getJobStateAggregation() {
-        return jobRepository.getJobStateAggregation();
-    }
+public ResponseEntity<Page<Job>> getAllJobs(
+@RequestParam(required = false) Double min,
+ @RequestParam(required = false) JobType type,
+@RequestParam(required = false) Integer pageNumber,
+@RequestParam(required = false) Integer pageSize) {
+Page<Job> allJobs;
+if (min == null && type == null) {
+allJobs = jobRepository.findAll(PageRequest.of(pageNumber - 1, pageSize));
+} else {
+if (min != null && type != null) {
+allJobs = jobRepository.findByJobTypeAndEarningsGreaterThan(type, min,
+PageRequest.of(pageNumber - 1, pageSize));
+} else if (min != null) {
+allJobs = jobRepository.findByEarningsGreaterThan(min,
+PageRequest.of(pageNumber - 1, pageSize));
+} else {
+allJobs = jobRepository.findByJobType(type, PageRequest.of(pageNumber - 1,
+pageSize));
+}
+}
+return new ResponseEntity<>(allJobs, HttpStatus.OK);
+}
 }
 
 
