@@ -6,6 +6,10 @@
 
   const api_root = $page.url.origin;
 
+let currentPage;
+let nrOfPages = 0;
+let defaultPageSize = 4;
+
   let jobs = [];
   let job = {
     description: null,
@@ -13,20 +17,37 @@
     jobType: null,
   };
 
-  onMount(() => {
-    getJobs();
-  });
+  $: {
+if ($jwt_token !== "") {
+let searchParams = $page.url.searchParams;
+if (searchParams.has("page")) {
+currentPage = searchParams.get("page");
+} else {
+currentPage = "1";
+}
+getJobs();
+}
+}
+
+ /* onMount(() => {
+getJobs();
+}); */
 
   function getJobs() {
+
+    let query = "?pageSize=" + defaultPageSize + "&pageNumber=" + currentPage;
+  
     var config = {
       method: "get",
-      url: api_root + "/api/job",
+      url: api_root + "/api/job" + query,
       headers: { Authorization: "Bearer " + $jwt_token },
     };
 
     axios(config)
       .then(function (response) {
-        jobs = response.data;
+        jobs = response.data.content;
+
+        nrOfPages = response.data.totalPages;
       })
       .catch(function (error) {
         alert("Could not get jobs");
@@ -120,3 +141,16 @@
     {/each}
   </tbody>
 </table>
+<nav>
+  <ul class="pagination">
+  {#each Array(nrOfPages) as _, i}
+  <li class="page-item">
+  <a
+  class="page-link"
+  class:active={currentPage == i + 1}
+  href={"/jobs?page=" + (i + 1)}>{i + 1}
+  </a>
+  </li>
+  {/each}
+  </ul>
+  </nav>
