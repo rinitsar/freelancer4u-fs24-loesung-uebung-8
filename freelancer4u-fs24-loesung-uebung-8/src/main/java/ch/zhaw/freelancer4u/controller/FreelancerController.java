@@ -74,5 +74,17 @@ public ResponseEntity<Page<Freelancer>> getAllFreelancer(
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+    @GetMapping("/me/freelancer")
+public ResponseEntity<Freelancer> getMyFreelancerId(@AuthenticationPrincipal Jwt jwt) {
+    String userEmail = jwt.getClaimAsString("email");
+
+    
+    Optional<Freelancer> freelancer = freelancerRepository.findById(userEmail);
+    if (freelancer.isPresent()) {
+        return new ResponseEntity<>(freelancer.get(), HttpStatus.OK);
+    } else {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+}
 
 }
