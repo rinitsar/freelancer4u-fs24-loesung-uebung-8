@@ -3,6 +3,8 @@
   import { page } from "$app/stores";
   import { onMount } from "svelte";
   import { jwt_token, user } from "../../store";
+  import { user, jwt_token, myFreelancerId } from "../store";
+
 
   const api_root = $page.url.origin;
 
