@@ -47,8 +47,8 @@ public class JobController {
 public ResponseEntity<Page<Job>> getAllJobs(
 @RequestParam(required = false) Double min,
  @RequestParam(required = false) JobType type,
-@RequestParam(required = false) Integer pageNumber,
-@RequestParam(required = false) Integer pageSize) {
+ @RequestParam(required = false, defaultValue = "1") Integer pageNumber,
+ @RequestParam(required = false, defaultValue = "2") Integer pageSize) {
 Page<Job> allJobs;
 if (min == null && type == null) {
 allJobs = jobRepository.findAll(PageRequest.of(pageNumber - 1, pageSize));
