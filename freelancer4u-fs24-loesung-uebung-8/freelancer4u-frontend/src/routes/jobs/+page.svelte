@@ -86,6 +86,22 @@ query += "&type=" + jobType;
         console.log(error);
       });
   }
+
+  function assignToMe(jobId) {
+var config = {
+method: "put",
+url: api_root + "/api/service/me/assignjob?jobId=" + jobId,
+headers: { Authorization: "Bearer " + $jwt_token },
+};
+axios(config)
+.then(function (response) {
+getJobs();
+})
+.catch(function (error) {
+alert("Could not assign job to me");
+console.log(error);
+});
+}
 </script>
 
 {#if $user.user_roles && $user.user_roles.length > 0}
@@ -166,6 +182,7 @@ query += "&type=" + jobType;
       <th scope="col">Earnings</th>
       <th scope="col">State</th>
       <th scope="col">FreelancerId</th>
+      <th scope="col">Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -176,6 +193,19 @@ query += "&type=" + jobType;
         <td>{job.earnings}</td>
         <td>{job.jobState}</td>
         <td>{job.freelancerId}</td>
+        <td>
+          {#if job.jobState === "ASSIGNED"}
+          <span class="badge bg-secondary">Assigned</span>
+          {:else if job.freelancerId === null}
+          <button
+          type="button"
+          class="btn btn-primary btn-sm"
+          on:click={() => { assignToMe(job.id); }}
+          >
+          Assign to me
+          </button>
+          {/if}
+          </td>
       </tr>
     {/each}
   </tbody>
