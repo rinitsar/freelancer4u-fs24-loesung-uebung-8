@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -63,6 +64,16 @@ pageSize));
 }
 return new ResponseEntity<>(allJobs, HttpStatus.OK);
 }
+
+@DeleteMapping("/job")
+public ResponseEntity<String> deleteAllJobs(@AuthenticationPrincipal Jwt jwt) {
+if (!roleService.hasRole("admin", jwt)) {
+return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+}
+jobRepository.deleteAll();
+return ResponseEntity.status(HttpStatus.OK).body("DELETED");
+}
+
 }
 
 

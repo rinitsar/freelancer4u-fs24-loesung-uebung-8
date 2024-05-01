@@ -8,7 +8,8 @@
 		"watch": "vite build --watch --emptyOutDir",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"cypress": "npx cypress open"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^3.0.0",
