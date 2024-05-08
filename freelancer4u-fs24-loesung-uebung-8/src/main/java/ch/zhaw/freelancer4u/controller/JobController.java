@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,7 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 import ch.zhaw.freelancer4u.model.Job;
 import ch.zhaw.freelancer4u.model.JobCreateDTO;
 import ch.zhaw.freelancer4u.model.JobType;
+import ch.zhaw.freelancer4u.model.Mail;
 import ch.zhaw.freelancer4u.repository.JobRepository;
+import ch.zhaw.freelancer4u.service.MailService;
 import ch.zhaw.freelancer4u.service.RoleService;
 
 @RestController
@@ -73,7 +76,23 @@ return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 jobRepository.deleteAll();
 return ResponseEntity.status(HttpStatus.OK).body("DELETED");
 }
+@Autowired
+private MailService mailService;
 
+@PutMapping("/assignjob")
+public ResponseEntity<Job> assignJob(@RequestParam String jobId, @RequestParam String freelancerEmail) {
+    // Your code to assign the job...
+
+    // After assigning the job, send an email
+    Mail mail = new Mail();
+    mail.setTo(freelancerEmail);
+    mail.setSubject("Job Assigned");
+    mail.setMessage("You have been assigned to job with id: " + jobId);
+    mailService.sendMail(mail);
+    return null;
+
+    // Your code to return the response...
+}
 }
 
 

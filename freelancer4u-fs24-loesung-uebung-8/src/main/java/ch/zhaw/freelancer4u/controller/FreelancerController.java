@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ch.zhaw.freelancer4u.model.Freelancer;
 import ch.zhaw.freelancer4u.model.FreelancerCreateDTO;
 import ch.zhaw.freelancer4u.repository.FreelancerRepository;
+import ch.zhaw.freelancer4u.service.MailValidatorService;
 import ch.zhaw.freelancer4u.service.RoleService;
 
 @RestController
@@ -36,7 +37,11 @@ public class FreelancerController {
 
     @PostMapping("/freelancer")
     public ResponseEntity<Freelancer> createFreelancer(
-            @RequestBody FreelancerCreateDTO fDTO, @AuthenticationPrincipal Jwt jwt) {
+        @RequestBody FreelancerCreateDTO fDTO, @AuthenticationPrincipal Jwt jwt) {
+         // Validate email
+        if (mailValidatorService.validateEmail(fDTO.getEmail()) == false) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         if (!roleService.hasRole("admin", jwt)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -86,5 +91,8 @@ public ResponseEntity<Freelancer> getMyFreelancerId(@AuthenticationPrincipal Jwt
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
-
+@Autowired
+ MailValidatorService mailValidatorService;
 }
+
+

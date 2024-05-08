@@ -56,6 +56,28 @@ getJobs();
       });
   }
 
+function validateEmailAndcreateFreelancer(){
+ var config = {
+ method: "get",
+ url: "https://disify.com/api/email/" + freelancer.email
+ };
+ axios(config)
+ .then(function (response) {
+ console.log("Validated email "+freelancer.email);
+ console.log(response.data);
+ if(response.data.format && !response.data.disposable
+ && response.data.dns){
+ createFreelancer();
+ }else{
+ alert("Email "+freelancer.email+" is not valid.");
+ }
+ })
+ .catch(function (error) {
+ alert("Could not validate email");
+ console.log(error);
+ });
+}
+
   function createFreelancer() {
     var config = {
       method: "post",
@@ -103,9 +125,9 @@ getJobs();
       />
     </div>
   </div>
-  <button type="button" class="btn btn-primary" on:click={createFreelancer}
-    >Submit</button
-  >
+  <button type="button" class="btn btn-primary"
+  on:click={validateEmailAndcreateFreelancer}>Submit</button>
+  
 </form>
 
 <h1>All Freelancers</h1>
